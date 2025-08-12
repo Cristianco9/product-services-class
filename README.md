@@ -64,19 +64,19 @@ git clone https://github.com/iensc-software-sena/product-services-class.git
 2. Accede al directorio::
 
 ```bash
-    cd product-services-class
+cd product-services-class
 ```
 
 3. Abre el proyecto en Visual Studio Code:
 
 ```bash
-    code .
+code .
 ```
 
 4. Ejecuta el archivo en la terminal de comandos:
 
 ```bash
-    node src/ProductServices.js
+node src/ProductServices.js
 ```
 
 ## Ideas para extender el ejercicio
