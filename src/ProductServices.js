@@ -7,17 +7,17 @@ class ProductServices {
     createOne(newProduct) {
         try {
             if (!newProduct) {
-                return { 
-                    status: "wrong", 
-                    message: "No product object sent." 
+                return {
+                    status: "wrong",
+                    message: "No product object sent."
                 };
             }
             const product = { ...newProduct };
             this.productsCreated.push(product);
             delete product.key;
-            return { 
-                status: "correct", 
-                message: "New product added successfully.", 
+            return {
+                status: "correct",
+                message: "New product added successfully.",
                 newProduct: product
             };
         } catch (err) {
@@ -29,24 +29,24 @@ class ProductServices {
     listOne(productID) {
         try {
             if (!productID) {
-                return { 
-                    status: "wrong", 
-                    message: "No product id sent." 
+                return {
+                    status: "wrong",
+                    message: "No product id sent."
                 };
             }
-            const theProduct = this.productsCreated.find( p => p.id === productID );
+            const theProduct = this.productsCreated.find(p => p.id === productID);
             if (!theProduct) {
-                return { 
-                    status: "wrong", 
+                return {
+                    status: "wrong",
                     message: "Product not found."
                 };
             }
             const productCopy = { ...theProduct };
             delete productCopy.key;
-            return { 
-                status: "correct", 
-                message: "Product found successfully.", 
-                product: productCopy 
+            return {
+                status: "correct",
+                message: "Product found successfully.",
+                product: productCopy
             };
         } catch (err) {
             console.error('Cannot find the product:', err.message);
@@ -56,15 +56,15 @@ class ProductServices {
 
     listAll() {
         try {
-            const allProducts = this.productsCreated.map( p => {
+            const allProducts = this.productsCreated.map(p => {
                 const copy = { ...p };
                 delete copy.key;
                 return copy;
             });
-            return { 
-                status: "correct", 
-                message: "Products found successfully.", 
-                products: allProducts 
+            return {
+                status: "correct",
+                message: "Products found successfully.",
+                products: allProducts
             };
         } catch (err) {
             console.error('Cannot find the products:', err.message);
@@ -75,23 +75,23 @@ class ProductServices {
     deleteOne(productID) {
         try {
             if (!productID) {
-                return { 
-                    status: "wrong", 
-                    message: "No product id sent." 
+                return {
+                    status: "wrong",
+                    message: "No product id sent."
                 };
             }
-            const index = this.productsCreated.findIndex( p => p.id === productID );
+            const index = this.productsCreated.findIndex(p => p.id === productID);
             if (index === -1) {
-                return { 
-                    status: "wrong", 
-                    message: "Product not found." 
+                return {
+                    status: "wrong",
+                    message: "Product not found."
                 };
             }
-            const [ deletedProduct ] = this.productsCreated.splice(index, 1);
+            const [deletedProduct] = this.productsCreated.splice(index, 1);
             const productCopy = { ...deletedProduct };
             delete productCopy.key;
-            return { 
-                status: "correct", 
+            return {
+                status: "correct",
                 message: "Product deleted successfully.",
                 product: productCopy
             };
@@ -104,8 +104,8 @@ class ProductServices {
     updateOne(productID, newProduct) {
         try {
             if (!productID) {
-                return { 
-                    status: "wrong", 
+                return {
+                    status: "wrong",
                     message: "No product id sent."
                 };
             }
@@ -115,9 +115,9 @@ class ProductServices {
                     message: "No new product data sent."
                 };
             }
-            const index = this.productsCreated.findIndex( p => p.id === productID );
+            const index = this.productsCreated.findIndex(p => p.id === productID);
             if (index === -1) {
-                return { 
+                return {
                     status: "wrong",
                     message: "Product not found."
                 };
@@ -133,6 +133,67 @@ class ProductServices {
         } catch (err) {
             console.error('Cannot update the product:', err.message);
             throw new Error(`Cannot update the product: ${err.message}`);
+        }
+    }
+
+    findByName(name) {
+        try {
+            if (!name) {
+                return {
+                    status: "wrong",
+                    message: "No name sent."
+                };
+            }
+            const results = this.productsCreated.filter(p =>
+                p.name.toLowerCase().includes(name.toLowerCase())
+            ).map(p => {
+                const copy = { ...p };
+                delete copy.key;
+                return copy;
+            });
+
+            if (results.length === 0) {
+                return {
+                    status: "wrong",
+                    message: "No products found with that name."
+                };
+            }
+
+            return {
+                status: "correct",
+                message: "Products found successfully.",
+                products: results
+            };
+        } catch (err) {
+            console.error('Cannot search products by name:', err.message);
+            throw new Error(`Cannot search products by name: ${err.message}`);
+        }
+    }
+
+    findMostExpensive() {
+        try {
+            if (this.productsCreated.length === 0) {
+                return {
+                    status: "wrong",
+                    message: "No products available."
+                };
+            }
+
+            const mostExpensive = this.productsCreated.reduce((prev, current) =>
+                current.price > prev.price ? current : prev
+            );
+
+            const productCopy = { ...mostExpensive };
+            delete productCopy.key;
+
+            return {
+                status: "correct",
+                message: "Most expensive product found successfully.",
+                product: productCopy
+            };
+        } catch (err) {
+            console.error('Cannot find the most expensive product:', err.message);
+            throw new Error(`Cannot find the most expensive product: ${err.message}`);
         }
     }
 }
@@ -172,3 +233,9 @@ console.log(services.deleteOne(99));
 
 console.log("update a product:");
 console.log(services.updateOne(99, { id: 99, name: "Fake", price: 0 }));
+
+console.log("find by name:");
+console.log(services.findByName("mouse"));
+
+console.log("most expensive:");
+console.log(services.findMostExpensive());
